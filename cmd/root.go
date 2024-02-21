@@ -39,11 +39,13 @@ func Execute() {
 	}
 }
 
-var jsonOpt bool
-var rawOpt bool
-var netboxToken string = os.Getenv("NETBOX_TOKEN")
-var netboxHost string = os.Getenv("NETBOX_HOST")
-var httpScheme string = os.Getenv("NETBOX_HTTP_SCHEME")
+var (
+	jsonOpt     bool
+	rawOpt      bool
+	netboxToken string = os.Getenv("NETBOX_TOKEN")
+	netboxHost  string = os.Getenv("NETBOX_HOST")
+	httpScheme  string = os.Getenv("NETBOX_HTTP_SCHEME")
+)
 
 func init() {
 	if netboxToken == "" {
