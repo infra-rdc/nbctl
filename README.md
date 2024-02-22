@@ -43,4 +43,4 @@ Distributed under the GPLv3 License. See LICENSE for more information.
 
 ## Contact
 
-Julien Briault - @ju_hnny5
+Julien Briault - [@ju_hnny5](https://twitter.com/ju_hnny5)
