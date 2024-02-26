@@ -34,7 +34,7 @@ nbctl help
 ### List devices
 
 ```bash
-nbctl dcim devices list [--jsor|--raw]
+nbctl dcim devices list [--json|--raw]
 ```
 
 ## License
