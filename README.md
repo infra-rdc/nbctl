@@ -29,6 +29,24 @@ export NETBOX_HTTP_SCHEME="http"
 export NETBOX_HOST="netbox.example.org"
 export NETBOX_TOKEN="....."
 nbctl help
+
+----
+Uncomplicated CLI interaction with Netbox.
+
+Usage:
+  nbctl [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  dcim        Interact with dcim.
+  help        Help about any command
+  version     Shows the current nbctl version
+
+Flags:
+  -h, --help     help for nbctl
+  -t, --toggle   Help message for toggle
+
+Use "nbctl [command] --help" for more information about a command.
 ```
 
 ## Usage
