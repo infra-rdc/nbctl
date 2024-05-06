@@ -49,6 +49,9 @@ nbctl dcim devices list -k "rack 1"
 |     NAME      |              TYPE              |     TENANT     | SERIAL |    LOCATION    |        SITE        |      RACK      | STATUS  |
 +---------------+--------------------------------+----------------+--------+----------------+--------------------+----------------+---------+
 | Server1       | PowerEdge R430                 | Restos du Cœur |        | Salle serveurs | Data Center        | rack 1         | active  |
+| Server2       | PowerEdge R430                 | Restos du Cœur |        | Salle serveurs | Data Center        | rack 1         | active  |
+| Web1          | PowerEdge R630                 | Restos du Cœur |        | Salle serveurs | Data Center        | rack 1         | active  |
+| Web2          | PowerEdge R630                 | Restos du Cœur |        | Salle serveurs | Data Center        | rack 1         | active  |
 ```
 
 ## License
