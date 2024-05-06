@@ -19,6 +19,8 @@
   </p>
 </div>
 
+`nbctl` is a command line for interacting with Netbox. For the moment, it only lists items.
+
 ## Getting started
 
 ```bash
@@ -33,8 +35,20 @@ nbctl help
 
 ### List devices
 
+List the various items of equipment, filtering by equipment, bay, location, type, site, status, etc.
+
 ```bash
 nbctl dcim devices list [--json|--raw]
+```
+
+Example:
+
+```bash
+nbctl dcim devices list -k "rack 1"
++---------------+--------------------------------+----------------+--------+----------------+--------------------+----------------+---------+
+|     NAME      |              TYPE              |     TENANT     | SERIAL |    LOCATION    |        SITE        |      RACK      | STATUS  |
++---------------+--------------------------------+----------------+--------+----------------+--------------------+----------------+---------+
+| Server1       | PowerEdge R430                 | Restos du Cœur |        | Salle serveurs | Data Center        | rack 1         | active  |
 ```
 
 ## License
