@@ -6,12 +6,12 @@ import (
 )
 
 var (
-	Version   string           // "v0.0.1"
-	GoVersion string           // "1.19"
-	Os        = runtime.GOOS   // linux
-	Arch      = runtime.GOARCH // amd64
-	BuildDate string           // 2022-04-22_14:29:29
-	Revision  string           // last Git commit hash
+	Version   string              // "v0.0.1"
+	GoVersion = runtime.Version() // "1.19"
+	Os        = runtime.GOOS      // linux
+	Arch      = runtime.GOARCH    // amd64
+	BuildDate string              // 2022-04-22_14:29:29
+	Revision  string              // last Git commit hash
 )
 
 // Show function print version informations in standard output.

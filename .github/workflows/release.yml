@@ -1,5 +1,5 @@
 ---
-name: nbctl
+name: goreleaser
 
 on:
   pull_request:
