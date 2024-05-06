@@ -42,5 +42,5 @@ func init() {
 	dcimPlatformsCmd.AddCommand(dcimPlatformsListCmd)
 	dcimPlatformsListCmd.Flags().BoolVarP(&jsonOpt, "json", "j", false, "Enable json output")
 	dcimPlatformsListCmd.Flags().BoolVarP(&rawOpt, "raw", "r", false, "Enable raw output")
-	dcimPlatformsListCmd.Flags().StringVarP(&siteName, "name", "n", "", "Select specifc platform name")
+	dcimPlatformsListCmd.Flags().StringVarP(&siteNameOpt, "name", "n", "", "Select specifc platform name")
 }

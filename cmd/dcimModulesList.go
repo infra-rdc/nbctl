@@ -23,14 +23,20 @@ import (
 )
 
 var (
-	moduleName string
+	moduleNameDcimModulesListOpt string
 	// dcimModulesListCmd represents the list command
 	dcimModulesListCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List all modules.",
 		Long:  `List all modules.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := netbox.PrintModulesList(netboxHost, netboxToken, httpScheme, jsonOpt, rawOpt, moduleName)
+			err := netbox.PrintModulesList(
+				netboxHost,
+				netboxToken,
+				httpScheme,
+				jsonOpt,
+				rawOpt,
+				moduleNameDcimModulesListOpt)
 			if err != nil {
 				log.Error(err)
 			}
@@ -42,5 +48,5 @@ func init() {
 	dcimPlatformsCmd.AddCommand(dcimModulesListCmd)
 	dcimModulesListCmd.Flags().BoolVarP(&jsonOpt, "json", "j", false, "Enable json output")
 	dcimModulesListCmd.Flags().BoolVarP(&rawOpt, "raw", "r", false, "Enable raw output")
-	dcimModulesListCmd.Flags().StringVarP(&siteName, "name", "n", "", "Select specifc module name")
+	dcimModulesListCmd.Flags().StringVarP(&siteNameOpt, "name", "n", "", "Select specifc module name")
 }

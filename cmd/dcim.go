@@ -22,15 +22,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// dcimCmd represents the dcim command
-var dcimCmd = &cobra.Command{
-	Use:   "dcim",
-	Short: "Interact with dcim.",
-	Long:  `Interact with dcim.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("dcim called")
-	},
-}
+var (
+	// Main dcim options vars
+	siteNameOpt string
+	// dcimCmd represents the dcim command
+	dcimCmd = &cobra.Command{
+		Use:   "dcim",
+		Short: "Interact with dcim.",
+		Long:  `Interact with dcim.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("dcim called")
+		},
+	}
+)
 
 func init() {
 	rootCmd.AddCommand(dcimCmd)

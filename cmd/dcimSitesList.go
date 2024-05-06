@@ -23,14 +23,13 @@ import (
 )
 
 var (
-	siteName string
 	// dcimSitesListCmd represents the list command
 	dcimSitesListCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List all sites.",
 		Long:  `List all sites.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := netbox.PrintSitesList(netboxHost, netboxToken, httpScheme, jsonOpt, rawOpt, siteName)
+			err := netbox.PrintSitesList(netboxHost, netboxToken, httpScheme, jsonOpt, rawOpt, siteNameOpt)
 			if err != nil {
 				log.Error(err)
 			}
@@ -42,5 +41,5 @@ func init() {
 	dcimSitesCmd.AddCommand(dcimSitesListCmd)
 	dcimSitesListCmd.Flags().BoolVarP(&jsonOpt, "json", "j", false, "Enable json output")
 	dcimSitesListCmd.Flags().BoolVarP(&rawOpt, "raw", "r", false, "Enable raw output")
-	dcimSitesListCmd.Flags().StringVarP(&siteName, "name", "n", "", "Select specifc site name")
+	dcimSitesListCmd.Flags().StringVarP(&siteNameOpt, "name", "n", "", "Select specifc site name")
 }

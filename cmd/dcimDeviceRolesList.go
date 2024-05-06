@@ -23,14 +23,20 @@ import (
 )
 
 var (
-	deviceRoleName string
+	deviceRoleNameDcimDeviceRolesListOpt string
 	// dcimDeviceRoleslistCmd represents the list command
 	dcimDeviceRoleslistCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List all device roles.",
 		Long:  `List all device roles.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := netbox.PrintDeviceRolesList(netboxHost, netboxToken, httpScheme, jsonOpt, rawOpt, deviceRoleName)
+			err := netbox.PrintDeviceRolesList(
+				netboxHost,
+				netboxToken,
+				httpScheme,
+				jsonOpt,
+				rawOpt,
+				deviceRoleNameDcimDeviceRolesListOpt)
 			if err != nil {
 				log.Error(err)
 			}
@@ -42,5 +48,5 @@ func init() {
 	dcimDeviceRolesCmd.AddCommand(dcimDeviceRoleslistCmd)
 	dcimDeviceRoleslistCmd.Flags().BoolVarP(&jsonOpt, "json", "j", false, "Enable json output")
 	dcimDeviceRoleslistCmd.Flags().BoolVarP(&rawOpt, "raw", "r", false, "Enable raw output")
-	dcimDeviceRoleslistCmd.Flags().StringVarP(&deviceRoleName, "name", "n", "", "Select specifc device role name")
+	dcimDeviceRoleslistCmd.Flags().StringVarP(&deviceRoleNameDcimDeviceRolesListOpt, "name", "n", "", "Select specifc device role name")
 }

@@ -23,14 +23,22 @@ import (
 )
 
 var (
-	deviceName string
+	deviceNameDcimDevicesListOpt string
+	rackNameDcimDevicesListOpt   string
 	// dcimDevicesListCmd represents the list command
 	dcimDevicesListCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List all devices.",
 		Long:  `List all devices.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := netbox.PrintDevicesList(netboxHost, netboxToken, httpScheme, jsonOpt, rawOpt, deviceName)
+			err := netbox.PrintDevicesList(
+				netboxHost,
+				netboxToken,
+				httpScheme,
+				jsonOpt,
+				rawOpt,
+				deviceNameDcimDevicesListOpt,
+				rackNameDcimDevicesListOpt)
 			if err != nil {
 				log.Error(err)
 			}
@@ -43,5 +51,6 @@ func init() {
 	dcimDevicesCmd.AddCommand(dcimDevicesListCmd)
 	dcimDevicesListCmd.Flags().BoolVarP(&jsonOpt, "json", "j", false, "Enable json output")
 	dcimDevicesListCmd.Flags().BoolVarP(&rawOpt, "raw", "r", false, "Enable raw output")
-	dcimDevicesListCmd.Flags().StringVarP(&deviceName, "name", "n", "", "Select specifc device name")
+	dcimDevicesListCmd.Flags().StringVarP(&deviceNameDcimDevicesListOpt, "name", "n", "", "Select specifc device name")
+	dcimDevicesListCmd.Flags().StringVarP(&rackNameDcimDevicesListOpt, "rack", "k", "", "Select specifc rack name")
 }

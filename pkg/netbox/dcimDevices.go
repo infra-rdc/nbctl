@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/netbox-community/go-netbox/netbox/client/dcim"
 	"github.com/olekukonko/tablewriter"
 )
 
-func listDevicesPayload(netboxHost, token string, httpScheme string) ([][]string, error) {
+func listDevicesPayload(netboxHost, token string, httpScheme string, rackName string) ([][]string, error) {
 	c := newNetboxClient(netboxHost, token, httpScheme)
 	params := dcim.NewDcimDevicesListParams()
 	resp, err := c.Dcim.DcimDevicesList(params, nil)
@@ -20,23 +21,32 @@ func listDevicesPayload(netboxHost, token string, httpScheme string) ([][]string
 	var data [][]string
 
 	for _, device := range resp.Payload.Results {
-		data = append(
-			data, []string{
-				*device.Name,
-				*device.DeviceType.Model,
-				*device.Tenant.Name,
-				*&device.Serial,
-				*device.Location.Name,
-				*device.Site.Name,
-				*device.Rack.Name,
-				*device.Status.Value})
+		status := *device.Status.Value
+		if status == "active" {
+			status = color.GreenString(status)
+		} else if status == "offline" {
+			status = color.RedString(status)
+		}
+		if rackName == "" || (device.Rack != nil && device.Rack.Name != nil && *device.Rack.Name == rackName) {
+			data = append(
+				data, []string{
+					*device.Name,
+					*device.DeviceType.Model,
+					*device.Tenant.Name,
+					*&device.Serial,
+					*device.Location.Name,
+					*device.Site.Name,
+					*device.Rack.Name,
+					status,
+				})
+		}
 	}
 
 	return data, nil
 }
 
-func PrintDevicesList(netboxHost, token string, httpScheme string, jsonOpt bool, rawOpt bool, deviceName string) error {
-	data, err := listDevicesPayload(netboxHost, token, httpScheme)
+func PrintDevicesList(netboxHost, token string, httpScheme string, jsonOpt bool, rawOpt bool, deviceName string, rackName string) error {
+	data, err := listDevicesPayload(netboxHost, token, httpScheme, rackName)
 	if err != nil {
 		return err
 	}
