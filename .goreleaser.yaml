@@ -1,0 +1,24 @@
+---
+before:
+  hooks:
+    - go mod tidy
+    - go test
+builds:
+  # https://goreleaser.com/customization/build/
+  - binary: nbctl
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+      - 386
+    ldflags:
+      - github.com/infra-rdc/nbctl/pkg/version.Version={{.Version}}
+      - github.com/infra-rdc/nbctl/pkg/version.BuildDate={{.Date}}
+      - github.com/infra-rdc/nbctl/pkg/version.Revision={{.Commit}}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+changelog:
+  skip: true
