@@ -10,15 +10,28 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func listDevicesPayload(netboxHost, token string, httpScheme string, rackName string) ([][]string, error) {
+// DeviceData holds the details of a device to be displayed
+type DeviceData struct {
+	Name     string
+	Type     string
+	Tenant   string
+	Serial   string
+	Location string
+	Site     string
+	Rack     string
+	Status   string
+}
+
+// listDevicesPayload retrieves the device data from NetBox
+func listDevicesPayload(netboxHost, token string, httpScheme string, rackName string) ([]DeviceData, error) {
 	c := newNetboxClient(netboxHost, token, httpScheme)
 	params := dcim.NewDcimDevicesListParams()
 	resp, err := c.Dcim.DcimDevicesList(params, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get devices list: %s", err)
+		return nil, fmt.Errorf("cannot get devices list: %w", err)
 	}
 
-	var data [][]string
+	var devices []DeviceData
 
 	for _, device := range resp.Payload.Results {
 		status := *device.Status.Value
@@ -28,62 +41,83 @@ func listDevicesPayload(netboxHost, token string, httpScheme string, rackName st
 			status = color.RedString(status)
 		}
 		if rackName == "" || (device.Rack != nil && device.Rack.Name != nil && *device.Rack.Name == rackName) {
-			data = append(
-				data, []string{
-					*device.Name,
-					*device.DeviceType.Model,
-					*device.Tenant.Name,
-					*&device.Serial,
-					*device.Location.Name,
-					*device.Site.Name,
-					*device.Rack.Name,
-					status,
-				})
+			devices = append(devices, DeviceData{
+				Name:     getString(device.Name),
+				Type:     getString(device.DeviceType.Model),
+				Tenant:   getString(device.Tenant.Name),
+				Serial:   getString(device.Serial),
+				Location: getString(device.Location.Name),
+				Site:     getString(device.Site.Name),
+				Rack:     getString(device.Rack.Name),
+				Status:   status,
+			})
 		}
 	}
 
-	return data, nil
+	return devices, nil
 }
 
+// PrintDevicesList prints the list of devices in the desired format
 func PrintDevicesList(netboxHost, token string, httpScheme string, jsonOpt bool, rawOpt bool, deviceName string, rackName string) error {
-	data, err := listDevicesPayload(netboxHost, token, httpScheme, rackName)
+	devices, err := listDevicesPayload(netboxHost, token, httpScheme, rackName)
 	if err != nil {
 		return err
 	}
 
-	// Print output un json format
+	// Print output in JSON format
 	if jsonOpt {
-		jsonData, _ := json.Marshal(data)
-		fmt.Printf(string(jsonData))
-	} else if rawOpt {
-		// Print result in raw format
-		for _, value := range data {
-			fmt.Println(value)
-		}
-	} else {
-		// Init new table
-		table := tablewriter.NewWriter(os.Stdout)
-
-		// Set table headers
-		table.SetHeader([]string{"Name", "Type", "Tenant", "Serial", "Location", "Site", "Rack", "Status"})
-		table.SetBorder(true)
-
-		if deviceName == "" {
-			for _, v := range data {
-				table.Append(v)
-			}
-
-		} else {
-			for _, v := range data {
-				for _, x := range v {
-					if x == deviceName {
-						table.Append(v)
-					}
-				}
-			}
-		}
-		// Print table in std output
-		table.Render()
+		return printJSON(devices)
 	}
+
+	// Print result in raw format
+	if rawOpt {
+		printRaw(devices)
+		return nil
+	}
+
+	// Print result in table format
+	printTable(devices, deviceName)
 	return nil
+}
+
+// getString safely dereferences a string pointer
+func getString(ptr *string) string {
+	if ptr == nil {
+		return ""
+	}
+	return *ptr
+}
+
+// printJSON prints the devices in JSON format
+func printJSON(devices []DeviceData) error {
+	jsonData, err := json.Marshal(devices)
+	if err != nil {
+		return fmt.Errorf("failed to marshal JSON: %w", err)
+	}
+	fmt.Printf("%s\n", jsonData)
+	return nil
+}
+
+// printRaw prints the devices in raw format
+func printRaw(devices []DeviceData) {
+	for _, device := range devices {
+		fmt.Println(device)
+	}
+}
+
+// printTable prints the devices in table format
+func printTable(devices []DeviceData, deviceName string) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Type", "Tenant", "Serial", "Location", "Site", "Rack", "Status"})
+	table.SetBorder(true)
+
+	for _, device := range devices {
+		if deviceName == "" || device.Name == deviceName {
+			table.Append([]string{
+				device.Name, device.Type, device.Tenant, device.Serial,
+				device.Location, device.Site, device.Rack, device.Status,
+			})
+		}
+	}
+	table.Render()
 }
