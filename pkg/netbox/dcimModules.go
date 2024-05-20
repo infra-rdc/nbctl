@@ -9,64 +9,91 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func listModulesPayload(netboxHost, token string, httpScheme string) ([][]string, error) {
+// ModuleData holds the details of a module to be displayed
+type ModuleData struct {
+	Name   string
+	Serial string
+}
+
+// listModulesPayload retrieves the module data from NetBox
+func listModulesPayload(netboxHost, token string, httpScheme string) ([]ModuleData, error) {
 	c := newNetboxClient(netboxHost, token, httpScheme)
 	params := dcim.NewDcimModulesListParams()
 	resp, err := c.Dcim.DcimModulesList(params, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get modules list: %s", err)
+		return nil, fmt.Errorf("cannot get modules list: %w", err)
 	}
 
-	var data [][]string
+	var modules []ModuleData
 
 	for _, module := range resp.Payload.Results {
-		data = append(
-			data, []string{
-				*module.Device.Name, *&module.Serial})
+		modules = append(modules, ModuleData{
+			Name:   getString(module.Device.Name),
+			Serial: getString(module.Serial),
+		})
 	}
 
-	return data, nil
+	return modules, nil
 }
 
+// PrintModulesList prints the list of modules in the desired format
 func PrintModulesList(netboxHost, token string, httpScheme string, jsonOpt bool, rawOpt bool, moduleName string) error {
-	data, err := listModulesPayload(netboxHost, token, httpScheme)
+	modules, err := listModulesPayload(netboxHost, token, httpScheme)
 	if err != nil {
 		return err
 	}
 
-	// Print output un json format
+	// Print output in JSON format
 	if jsonOpt {
-		jsonData, _ := json.Marshal(data)
-		fmt.Printf(string(jsonData))
-	} else if rawOpt {
-		// Print result in raw format
-		for _, value := range data {
-			fmt.Println(value)
-		}
-	} else {
-		// Init new table
-		table := tablewriter.NewWriter(os.Stdout)
-
-		// Set table headers
-		table.SetHeader([]string{"Name", "Serial"})
-		table.SetBorder(true)
-
-		if moduleName == "" {
-			for _, v := range data {
-				table.Append(v)
-			}
-
-		} else {
-			for _, v := range data {
-				for _, x := range v {
-					if x == moduleName {
-						table.Append(v)
-					}
-				}
-			}
-		}
-		// Print table in std output
-		table.Render()
+		return printJSON(modules)
 	}
+
+	// Print result in raw format
+	if rawOpt {
+		printRaw(modules)
+		return nil
+	}
+
+	// Print result in table format
+	printTable(modules, moduleName)
 	return nil
+}
+
+// getString safely dereferences a string pointer
+func getString(ptr *string) string {
+	if ptr == nil {
+		return ""
+	}
+	return *ptr
+}
+
+// printJSON prints the modules in JSON format
+func printJSON(modules []ModuleData) error {
+	jsonData, err := json.Marshal(modules)
+	if err != nil {
+		return fmt.Errorf("failed to marshal JSON: %w", err)
+	}
+	fmt.Printf("%s\n", jsonData)
+	return nil
+}
+
+// printRaw prints the modules in raw format
+func printRaw(modules []ModuleData) {
+	for _, module := range modules {
+		fmt.Println(module)
+	}
+}
+
+// printTable prints the modules in table format
+func printTable(modules []ModuleData, moduleName string) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Serial"})
+	table.SetBorder(true)
+
+	for _, module := range modules {
+		if moduleName == "" || module.Name == moduleName {
+			table.Append([]string{module.Name, module.Serial})
+		}
+	}
+	table.Render()
 }
